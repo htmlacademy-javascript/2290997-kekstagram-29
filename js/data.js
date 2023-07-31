@@ -48,13 +48,20 @@ const NAMES = [
 
 const DESCRIPTIONS = ['Озеро', 'Веселый рис', 'Самолет над океаном', 'Удобное хранение обуви', 'Указатель к морю', 'Вид из окна', 'Новое платье', 'Мы с друзьями', 'Зима', 'Новая машина', 'Поход в горы', 'Дорога к морю', 'Суши с котиком', 'Крутые тапочки', 'Самолёт над облаками', 'Раритетное авто', 'Тапочки с подсветкой', 'Пальмы', 'Мой завтрак', 'Прохладительные напитки', 'Отличная фигура', 'Шиикарный ужин', 'Долгожданное свидание', 'Прогулка с собакой', 'Домашний уют'];
 
+// Для объекта по описанию фотографий
+
+let photoId = 1;
+let commentId = 1;
+
 // Получение одного или двух комментариев
+
 const createMessage = () => {
   const message = Array.from({ length: getRandomInteger(1, 2) }, () => getRandomArrayElement(MESSAGES));
   return Array.from(new Set(message)).join(' ');
 };
 
 // Создание объекта для комментариев
+
 const createCommentsArray = () => ({
   id: commentId++,
   avatar:  `img/avatar-${getRandomInteger(AVATAR_COUNTER.min, AVATAR_COUNTER.max)}.svg`,
@@ -63,8 +70,6 @@ const createCommentsArray = () => ({
 });
 
 // Создание объекта для описания фотографии
-let photoId = 1;
-let commentId = 1;
 
 const createDescription = () => ({
   id: photoId,
