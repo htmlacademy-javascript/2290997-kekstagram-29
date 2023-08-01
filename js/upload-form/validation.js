@@ -30,7 +30,7 @@ const checkSameHashtags = (value) => {
 const checkCommentLength = (value) => (value.length <= COMMENT_MAX_LENGTH);
 
 const setValidators = () => {
-  pristine.addValidator(textHashtags, checkTextHashtags, 'Хэш-тег начинается с символа #, дальше состоять из букв и чисел и не может содержать пробелы, спецсимволы (#, @, $ и т. п.), символы пунктуации (тире, дефис, запятая и т. п.), эмодзи и т. д.');
+  pristine.addValidator(textHashtags, checkTextHashtags, 'У вас не валидный хэштег, используйте запись в формате: #аяёaz09, максимальная длина одного хэш-тега 20 символов, включая решётку, хеш-тег не может состоять только из одной решётки, хэш-теги разделяются одним пробелом.');
   pristine.addValidator(textHashtags, checkHashtagsQuantity, 'Нельзя указать больше пяти хэш-тегов');
   pristine.addValidator(textHashtags, checkSameHashtags, 'Хэштеги не должны повторяться');
   pristine.addValidator(textDescription, checkCommentLength, 'Комментарий не должен быть больше 140 символов');
