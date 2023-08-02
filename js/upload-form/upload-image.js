@@ -1,5 +1,5 @@
 import {initScale, resetScale} from './scale.js';
-import {setValidate, resetValidation} from './validate.js';
+import {setValidate, resetValidation} from './validation.js';
 import {initSlider} from './slider.js';
 import {isEscapeKey} from '../utils/util.js';
 
@@ -10,13 +10,13 @@ const imgUploadCancel = document.querySelector('.img-upload__cancel');
 const filterList = document.querySelector('.effects__list');
 const defaultFilter = document.querySelector('input[checked].effects__radio').value;
 
-const filterListChangeHendler = (event) => initSlider(event.target.value);
+const filterListChangeHandler = (event) => initSlider(event.target.value);
 
 const openUploadForm = () => {
   uploadOverlay.classList.remove('hidden');
   document.body.classList.add('modal-open');
   document.addEventListener ('keydown', documentKeydownHandler);
-  filterList.addEventListener('change', filterListChangeHendler);
+  filterList.addEventListener('change', filterListChangeHandler);
 };
 
 const closeUploadForm = () => {
@@ -27,7 +27,7 @@ const closeUploadForm = () => {
   uploadOverlay.classList.add('hidden');
   document.body.classList.remove('modal-open');
   document.removeEventListener ('keydown', documentKeydownHandler);
-  filterList.removeEventListener('change', filterListChangeHendler);
+  filterList.removeEventListener('change', filterListChangeHandler);
 };
 
 const uploadImageChangeHandler = () => openUploadForm();
