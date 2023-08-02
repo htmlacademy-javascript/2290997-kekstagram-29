@@ -1,7 +1,7 @@
 import {isEscapeKey} from '../utils/util.js';
 import {initScale, resetScale} from './scale.js';
 import {initSlider} from './slider.js';
-import {initPristine, resetPristine, validatePristine} from './validation.js';
+import {initPristine, resetPristine, validatePristine} from './validate.js';
 import {sendData} from '../utils/api.js';
 import {showMessage} from '../utils/messages.js';
 
