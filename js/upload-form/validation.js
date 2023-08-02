@@ -1,49 +1,102 @@
-const HASHTAG_REGEXP = /^#[a-zа-яё0-9]{1,19}$/i;
-const MAX_COMMENT_LENGTH = 140;
-const MAX_HASHTAG_COUNT = 5;
+import {isEscapeKey} from '../utils/util.js';
+import {initScale, resetScale} from './scale.js';
+import {initSlider} from './slider.js';
+import {initPristine, resetPristine, validatePristine} from './validation.js';
+import {sendData} from '../utils/api.js';
+import {showMessage} from '../utils/messages.js';
 
-const INVALID_COMMENT_LENGTH_TEXT = 'Максимальная длина комментария - 140 символов';
-const INVALID_HASHTAG_TEXT = 'У вас не валидный хэштег, используйте запись в формате: #аяёaz09, максимальная длина одного хэш-тега 20 символов, включая решётку, хеш-тег не может состоять только из одной решётки, хэш-теги разделяются одним пробелом.';
-const HASHTAG_REPEAT_TEXT = 'Хэштэги не должны повторяться';
-const INVALID_HASHTAG_QUANTITY_TEXT = 'Нельзя указывать больше пяти хэштегов';
+const DATA_URL = 'https://29.javascript.pages.academy/kekstagram';
+const SUCCESS_CLASS = 'success';
+const ERROR_CLASS = 'error';
+const SUCCESS_MESSAGE = 'Изображение успешно загружено';
+const SUCCESS_BUTTON_TEXT = 'OK';
+const ERROR_UPLOAD_MESSAGE = 'Ошибка загрузки файла';
+const ERROR_UPLOAD_BUTTON_TEXT = 'Попробовать ещё раз';
+const ERROR_FILE_MESSAGE = 'Недопустимое расширение выбранного файла';
+const EXTENSION_REGEXP = /\.(jpg|png|jpeg|gif|webp)$/i;
 
 const uploadForm = document.querySelector('.img-upload__form');
-const imageHashtags = document.querySelector('.text__hashtags');
-const imageDescription = document.querySelector('.text__description');
+const uploadInput = document.querySelector('.img-upload__input');
+const filtersContainer = document.querySelector('.img-upload__overlay');
+const closeButton = document.querySelector('.img-upload__cancel');
+const imagePreview = document.querySelector('.img-upload__preview img');
+const effectsPreviewImages = document.querySelectorAll('.effects__preview');
+const filterList = document.querySelector('.effects__list');
+const defaultFilter = document.querySelector('input[checked].effects__radio').value;
+const submitButton = document.querySelector('.img-upload__submit');
 
-const pristine = new Pristine(uploadForm, {
-  classTo: 'img-upload__field-wrapper',
-  errorTextParent: 'img-upload__field-wrapper'
-});
+const filterListChangeHandler = (event) => initSlider(event.target.value);
 
-const createHashtags = (value) => value.trim().toLowerCase().split(' ');
+const closeUploadForm = () => {
+  resetScale();
+  resetPristine();
+  initSlider(defaultFilter);
+  uploadForm.reset();
+  filtersContainer.classList.add('hidden');
+  document.body.classList.remove('modal-open');
+  document.removeEventListener('keydown', documentKeydownHandler);
+  closeButton.removeEventListener('click', closeButtonClickHandler);
+  filterList.removeEventListener('change', filterListChangeHandler);
+};
 
-const checkHashtags = (value) => {
-  if (!value) {
-    return true;
+function closeButtonClickHandler(event) {
+  event.preventDefault();
+  closeUploadForm();
+}
+
+function documentKeydownHandler(event) {
+  if (isEscapeKey(event) && !event.target.closest('.text__hashtags') && !event.target.closest('.text__description')) {
+    event.preventDefault();
+    closeUploadForm();
   }
-  const hashtags = createHashtags(value);
-  return hashtags.every((element) => (element.match(HASHTAG_REGEXP)));
+}
+
+const successUpload = () => {
+  closeUploadForm();
+  showMessage(SUCCESS_CLASS, SUCCESS_MESSAGE, SUCCESS_BUTTON_TEXT);
 };
 
-const checkHashtagsCount = (value) => value.split(' ').length <= MAX_HASHTAG_COUNT;
+const errorUpload = () => showMessage(ERROR_CLASS, ERROR_UPLOAD_MESSAGE, ERROR_UPLOAD_BUTTON_TEXT);
 
-const checkSimilarHashtags = (value) => {
-  const hashtags = createHashtags(value);
-  return hashtags.length === new Set(hashtags).size;
+async function uploadFormSubmitHandler(event) {
+  event.preventDefault();
+
+  if (validatePristine()) {
+    submitButton.disabled = true;
+    await sendData(DATA_URL, new FormData(event.target), successUpload, errorUpload);
+    submitButton.disabled = false;
+  }
+}
+
+const openUploadForm = () => {
+  filtersContainer.classList.remove('hidden');
+  document.body.classList.add('modal-open');
+  document.addEventListener('keydown', documentKeydownHandler);
+  closeButton.addEventListener('click', closeButtonClickHandler);
+  filterList.addEventListener('change', filterListChangeHandler);
 };
 
-const checkCommentLength = (value) => value.length <= MAX_COMMENT_LENGTH;
-
-const validatePristine = () => pristine.validate();
-
-const resetPristine = () => pristine.reset();
-
-const initPristine = () => {
-  pristine.addValidator(imageDescription, checkCommentLength, INVALID_COMMENT_LENGTH_TEXT, 1, true);
-  pristine.addValidator(imageHashtags, checkHashtags, INVALID_HASHTAG_TEXT, 1, true);
-  pristine.addValidator(imageHashtags, checkHashtagsCount, INVALID_HASHTAG_QUANTITY_TEXT, 1, true);
-  pristine.addValidator(imageHashtags, checkSimilarHashtags, HASHTAG_REPEAT_TEXT, 1, true);
+const showImagePreview = (event) => {
+  const fileUrl = URL.createObjectURL(event.target.files[0]);
+  imagePreview.src = fileUrl;
+  effectsPreviewImages.forEach((effect) => (effect.style.backgroundImage = `url(${fileUrl})`));
 };
 
-export {initPristine, resetPristine, validatePristine};
+const uploadInputChangeHandler = (event) => {
+  if (event.target.value.match(EXTENSION_REGEXP)) {
+    openUploadForm();
+    showImagePreview(event);
+    return;
+  }
+  showMessage(ERROR_CLASS, ERROR_FILE_MESSAGE);
+};
+
+const initUploadForm = () => {
+  initScale();
+  initPristine();
+  initSlider(defaultFilter);
+  uploadForm.addEventListener('submit', uploadFormSubmitHandler);
+  uploadInput.addEventListener('change', uploadInputChangeHandler);
+};
+
+export {initUploadForm};
