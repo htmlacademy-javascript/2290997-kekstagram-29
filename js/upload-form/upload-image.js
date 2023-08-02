@@ -99,5 +99,4 @@ const initUploadForm = () => {
   uploadInput.addEventListener('change', uploadInputChangeHandler);
 };
 
-
 export {initUploadForm};
