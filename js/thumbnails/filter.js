@@ -3,9 +3,9 @@ import {debounce} from '../utils/util.js';
 
 const RANDOM_PICTURES_COUNT = 10;
 const DELAY = 500;
-const FILTERS = {
-  random: 'filter-random',
-  discussed: 'filter-discussed'
+const Filters = {
+  RANDOM: 'filter-random',
+  DISCUSSED: 'filter-discussed'
 };
 
 const filters = document.querySelector('.img-filters');
@@ -26,9 +26,9 @@ const filterInRandomOrder = (data) => {
 
 const getFilteredData = (id, data) => {
   switch (id) {
-    case FILTERS.random:
+    case Filters.RANDOM:
       return filterInRandomOrder(data);
-    case FILTERS.discussed:
+    case Filters.DISCUSSED:
       return filterByCommentsCount(data);
     default:
       return data;

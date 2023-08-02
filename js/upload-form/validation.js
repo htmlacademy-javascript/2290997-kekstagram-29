@@ -16,7 +16,7 @@ const pristine = new Pristine(uploadForm, {
   errorTextParent: 'img-upload__field-wrapper'
 });
 
-const createHashtags = (value) => value.trim().toLowerCase().split(' ');
+const createHashtags = (value) => value.trim().toLowerCase().split(' ').filter((item) => item !== '');
 
 const checkHashtags = (value) => {
   if (!value) {
@@ -26,7 +26,10 @@ const checkHashtags = (value) => {
   return hashtags.every((element) => (element.match(HASHTAG_REGEXP)));
 };
 
-const checkHashtagsCount = (value) => value.split(' ').length <= MAX_HASHTAG_COUNT;
+const checkHashtagsCount = (value) => {
+  const hashtags = createHashtags(value);
+  return hashtags.length <= MAX_HASHTAG_COUNT;
+};
 
 const checkSimilarHashtags = (value) => {
   const hashtags = createHashtags(value);
