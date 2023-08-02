@@ -54,4 +54,5 @@ const initFilter = (data) => {
   });
 };
 
+
 export {initFilter, getFilteredData};
